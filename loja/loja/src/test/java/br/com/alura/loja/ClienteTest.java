@@ -10,6 +10,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.filter.LoggingFilter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,11 +24,16 @@ import br.com.alura.loja.modelo.Produto;
 public class ClienteTest {
 	
 	private HttpServer server;
+	private Client client;
+	private WebTarget target;
 	
 	@Before
 	public void inicializaServidor() {
-		new Servidor();
+		ClientConfig config = new ClientConfig();
+		config.register(new LoggingFilter());
 		this.server = Servidor.inicializarServidor();
+		this.client = ClientBuilder.newClient(config);
+		this.target = this.client.target("http://localhost:8080");
 	}
 	
 	@After
@@ -36,9 +43,7 @@ public class ClienteTest {
 	
 	@Test
 	public void buscarUmCarrinhoDeveRetornarUmValido() {
-		Client client = ClientBuilder.newClient();
-		WebTarget target = client.target("http://localhost:8080");
-		String content = target.path("/carrinhos/1").request().get(String.class);
+		String content = this.target.path("/carrinhos/1").request().get(String.class);
 		Carrinho carrinho = (Carrinho) new XStream().fromXML(content);
 		assertEquals("Rua Vergueiro 3185, 8 andar", carrinho.getRua());
 	
@@ -52,12 +57,9 @@ public class ClienteTest {
         carrinho.setCidade("Sao Paulo");
         String xml = carrinho.toXML();
         
-        Client client = ClientBuilder.newClient();
-		WebTarget target = client.target("http://localhost:8080");
-        
         Entity<String> entity = Entity.entity(xml, MediaType.APPLICATION_XML);
 
-        Response response = target.path("/carrinhos").request().post(entity);
+        Response response = this.target.path("/carrinhos").request().post(entity);
         assertEquals(201, response.getStatus());
 	}
 }
