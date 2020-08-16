@@ -58,6 +58,6 @@ public class ClienteTest {
         Entity<String> entity = Entity.entity(xml, MediaType.APPLICATION_XML);
 
         Response response = target.path("/carrinhos").request().post(entity);
-        assertEquals("<status>Sucesso</status>", response.readEntity(String.class));
+        assertEquals(201, response.getStatus());
 	}
 }
