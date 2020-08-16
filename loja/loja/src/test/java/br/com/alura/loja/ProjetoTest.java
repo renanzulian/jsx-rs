@@ -34,8 +34,7 @@ public class ProjetoTest {
 	public void deveriaRetornarUmFormatoXML() {
 		Client client = ClientBuilder.newClient();
 		WebTarget target = client.target("http://localhost:8080");
-		String content = target.path("/projetos/1").request().get(String.class);
-		Projeto projeto = (Projeto) new XStream().fromXML(content);
+		Projeto projeto= target.path("/projetos/1").request().get(Projeto.class);
 		assertEquals("Minha loja", projeto.getNome());
 	}
 }

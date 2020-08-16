@@ -43,8 +43,7 @@ public class ClienteTest {
 	
 	@Test
 	public void buscarUmCarrinhoDeveRetornarUmValido() {
-		String content = this.target.path("/carrinhos/1").request().get(String.class);
-		Carrinho carrinho = (Carrinho) new XStream().fromXML(content);
+		Carrinho carrinho = this.target.path("/carrinhos/1").request().get(Carrinho.class);
 		assertEquals("Rua Vergueiro 3185, 8 andar", carrinho.getRua());
 	
 	}
@@ -55,9 +54,8 @@ public class ClienteTest {
 		carrinho.adiciona(new Produto(314L, "Tablet", 999, 1));
         carrinho.setRua("Rua Vergueiro");
         carrinho.setCidade("Sao Paulo");
-        String xml = carrinho.toXML();
         
-        Entity<String> entity = Entity.entity(xml, MediaType.APPLICATION_XML);
+        Entity<Carrinho> entity = Entity.entity(carrinho, MediaType.APPLICATION_XML);
 
         Response response = this.target.path("/carrinhos").request().post(entity);
         assertEquals(201, response.getStatus());
